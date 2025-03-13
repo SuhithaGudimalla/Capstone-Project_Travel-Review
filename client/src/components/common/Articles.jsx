@@ -1,24 +1,19 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import {useNavigate} from 'react-router-dom'
-import {useAuth} from '@clerk/clerk-react'
-
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@clerk/clerk-react'
 
 function Articles() {
-
   const [articles, setArticles] = useState([])
   const [error, setError] = useState('')
-  const navigate=useNavigate()
-  const {getToken}=useAuth();
+  const navigate = useNavigate()
+  const { getToken } = useAuth()
 
-  //get all articles
   async function getArticles() {
-    //get jwt token
-    const token=await getToken()
-    //make authenticated req
-    let res = await axios.get('http://localhost:4000/author-api/articles',{
-      headers:{
-        Authorization:`Bearer ${token}`
+    const token = await getToken()
+    let res = await axios.get('http://localhost:4000/author-api/articles', {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
     })
     if (res.data.message === 'articles') {
@@ -28,64 +23,89 @@ function Articles() {
       setError(res.data.message)
     }
   }
-  console.log(error)
 
-  //goto specific article
-  function gotoArticleById(articleObj){
-      navigate(`../${articleObj.articleId}`,{ state:articleObj})
+  function gotoArticleById(articleObj) {
+    navigate(`../${articleObj.articleId}`, { state: articleObj })
   }
-
 
   useEffect(() => {
     getArticles()
   }, [])
 
-  console.log(articles)
-
   return (
-    <div className='container'>
-      <div>
-      {error.length!==0&&<p className='display-4 text-center mt-5 text-danger'>{error}</p>}
-        <div className='row row-cols-1 row-cols-sm-2 row-cols-md-3 '>
-          {
-            articles.map((articleObj) => <div className='col' key={articleObj.articleId}>
-              <div className="card h-100">
-                <div className="card-body">
-                {/* author image  */}
-                  <div className="author-details text-end">
+    <div className='container py-5' 
+      style={{ 
+        background: 'linear-gradient(135deg, #EAFDF8, #F6F1F1)', 
+        minHeight: '100vh' 
+      }}>
+      <h2 className="text-center mb-4" style={{ fontWeight: 'bold', color: '#03254A' }}>
+        📖 Latest Travel Reviews
+      </h2>
+
+      {error.length !== 0 && 
+        <p className='display-6 text-center mt-4 text-danger'>{error}</p>
+      }
+
+      <div className='row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4'>
+        {
+          articles.map((articleObj) => (
+            <div className='col' key={articleObj.articleId}>
+              <div className="card shadow-lg border-0 h-100"
+                style={{ 
+                  borderRadius: '12px', 
+                  overflow: 'hidden', 
+                  transition: '0.3s', 
+                  background: 'rgba(255, 255, 255, 0.9)', 
+                  backdropFilter: 'blur(10px)'
+                }}>
+                
+                <div className="card-body d-flex flex-column">
+                  {/* Author Section */}
+                  <div className="d-flex align-items-center mb-2">
                     <img src={articleObj.authorData.profileImageUrl}
-                      width='40px'
-                      className='rounded-circle'
+                      width='45px'
+                      className='rounded-circle border shadow-sm me-2'
                       alt="" />
-                    {/* author name */}
-                    <p>
-                      <small className='text-secondary'>
-                        {articleObj.authorData.nameOfAuthor}
-                      </small>
+                    <p className='m-0'>
+                      <small className='text-muted fw-bold'>{articleObj.authorData.nameOfAuthor}</small>
                     </p>
                   </div>
-                  {/* article title */}
-                  <h5 className='card-title'>{articleObj.title}</h5>
-                  {/* article content upadto 80 chars */}
-                  <p className='card-text'>
+
+                  {/* Article Title */}
+                  <h5 className='card-title fw-bold' style={{ color: '#03254A' }}>{articleObj.title}</h5>
+
+                  {/* Article Content Preview */}
+                  <p className='card-text flex-grow-1 text-muted' style={{ fontSize: '0.95rem' }}>
                     {articleObj.content.substring(0, 80) + "...."}
                   </p>
-                  {/* read more button */}
-                  <button className='custom-btn btn-4' onClick={()=>gotoArticleById(articleObj)}>
-                    Read more
+
+                  {/* Read More Button */}
+                  <button className='btn' 
+                    onClick={() => gotoArticleById(articleObj)}
+                    style={{
+                      background: '#03254A',
+                      color: '#fff',
+                      borderRadius: '8px',
+                      padding: '8px 16px',
+                      transition: '0.3s',
+                      fontWeight: 'bold'
+                    }}
+                    onMouseOver={(e) => e.target.style.background = '#021D35'}
+                    onMouseOut={(e) => e.target.style.background = '#03254A'}>
+                    Read More
                   </button>
                 </div>
-                <div className="card-footer">
-                {/* article's date of modification */}
-                  <small className="text-body-secondary">
+
+                {/* Footer */}
+                <div className="card-footer bg-white border-0">
+                  <small className="text-muted">
                     Last updated on {articleObj.dateOfModification}
                   </small>
                 </div>
               </div>
             </div>
-            )
-          }
-        </div>
+          ))
+        }
       </div>
     </div>
   )
