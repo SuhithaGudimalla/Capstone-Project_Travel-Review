@@ -103,10 +103,7 @@ function ArticleByID() {
                       <p className="fw-bold">{state.authorData.nameOfAuthor}</p>
                     </div>
                   </div>
-                  <small className="text-secondary">
-                    Created: {new Date(state.dateOfCreation).toLocaleDateString('en-GB')} |  
-                    Modified: {new Date(state.dateOfModification).toLocaleDateString('en-GB')}
-                  </small>
+                  <small className="text-secondary">Created: {state.dateOfCreation} | Modified: {state.dateOfModification}</small>
                   <p className="mt-4 fs-5" style={{ whiteSpace: 'pre-line' }}>{state.content}</p>
 
                   {currentUser.role === 'author' && (
