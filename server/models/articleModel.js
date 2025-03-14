@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
-
-//create author schema
+// Create author schema inside article
 const authorDataSchema = new mongoose.Schema({
     nameOfAuthor: {
         type: String,
@@ -12,12 +11,12 @@ const authorDataSchema = new mongoose.Schema({
         required: true
     },
     profileImageUrl: {
-        type: String,
-
+        type: String, // Ensure this stores image URLs correctly
+        required: false
     }
-}, { "strict": "throw" })
+}, { strict: "throw" });
 
-//create user comment schema
+// Create user comment schema
 const userCommentSchema = new mongoose.Schema({
     nameOfUser: {
         type: String,
@@ -27,49 +26,32 @@ const userCommentSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-}, { "strict": "throw" })
+}, { strict: "throw" });
 
-//create Article schema
-const atricleSchema = new mongoose.Schema({
-    authorData: authorDataSchema,
-
-    articleId: {
-        type: String,
-        required: true
+// Create Article schema
+const articleSchema = new mongoose.Schema({
+    title: String,
+    category: String,
+    content: String,
+    imageUrl: String, // ✅ Store image URL
+    dateOfCreation: String,
+    dateOfModification: String,
+    authorData: {
+        nameOfAuthor: String,
+        email: String,
+        profileImageUrl: String,
     },
-    title: {
-        type: String,
-        required: true
-    },
-    category: {
-        type: String,
-        required: true
-    },
-    content: {
-        type: String,
-        required: true
-    },
-    dateOfCreation: {
-        type: String,
-        required: true
-    },
-    dateOfModification: {
-        type: String,
-        required: true
-    },
-    comments: [userCommentSchema],
-    isArticleActive: {
-        type: Boolean,
-        required: true
-    }
+    comments: [
+        {
+            nameOfUser: String,
+            comment: String,
+        }
+    ],
+    isArticleActive: Boolean
+});
 
+// Create model for article
+const Article = mongoose.model('article', articleSchema);
 
-
-}, { "strict": "throw" })
-
-
-//create model for article
-const Article = mongoose.model('article', atricleSchema)
-
-//export
+// Export
 module.exports = Article;

@@ -30,7 +30,7 @@ function ArticleByID() {
       const articleAfterChanges = { ...state, ...modifiedArticle };
       const token = await getToken();
       const currentDate = new Date();
-      articleAfterChanges.dateOfModification = currentDate.toLocaleDateString('en-GB'); 
+      articleAfterChanges.dateOfModification = currentDate.toLocaleDateString('en-GB');
 
       let res = await axios.put(
         `http://localhost:4000/author-api/article/${articleAfterChanges.articleId}`,
@@ -42,6 +42,7 @@ function ArticleByID() {
 
       if (res.data.message === 'article modified') {
         setEditArticleStatus(false);
+        setCurrentArticle(res.data.payload);
         navigate(`/author-profile/articles/${state.articleId}`, { state: res.data.payload });
       }
     } catch (error) {
@@ -56,6 +57,10 @@ function ArticleByID() {
 
       if (res.data.message === 'comment added') {
         setCommentStatus('Comment added successfully!');
+        setCurrentArticle((prev) => ({
+          ...prev,
+          comments: [...prev.comments, commentObj],
+        }));
       }
     } catch (error) {
       console.error('Error adding comment:', error);
@@ -96,6 +101,17 @@ function ArticleByID() {
             <div className="col-lg-10 col-md-11 col-sm-12">
               <div className="card shadow-lg">
                 <div className="card-body bg-light p-5">
+                  
+                  {/* ✅ Fixed Image URL */}
+                  {state.imageUrl && (
+                    <img 
+                      src={`http://localhost:4000${state.imageUrl}`} 
+                      alt="Article Cover" 
+                      className="img-fluid mb-4"
+                      style={{ width: '100%', borderRadius: '10px', objectFit: 'cover', maxHeight: '400px' }} 
+                    />
+                  )}
+
                   <div className="d-flex justify-content-between align-items-center border-bottom pb-3">
                     <h2 className="text-primary">{state.title}</h2>
                     <div className="text-center">
@@ -103,6 +119,7 @@ function ArticleByID() {
                       <p className="fw-bold">{state.authorData.nameOfAuthor}</p>
                     </div>
                   </div>
+
                   <small className="text-secondary">Created: {state.dateOfCreation} | Modified: {state.dateOfModification}</small>
                   <p className="mt-4 fs-5" style={{ whiteSpace: 'pre-line' }}>{state.content}</p>
 
@@ -125,11 +142,11 @@ function ArticleByID() {
 
                   <div className="mt-4">
                     <h4>Comments</h4>
-                    {state.comments.length === 0 ? (
+                    {currentArticle.comments.length === 0 ? (
                       <p className="text-muted">No comments yet...</p>
                     ) : (
-                      state.comments.map((commentObj) => (
-                        <div key={commentObj._id} className="border-bottom py-2">
+                      currentArticle.comments.map((commentObj, index) => (
+                        <div key={index} className="border-bottom py-2">
                           <p className="fw-bold mb-1">{commentObj?.nameOfUser}</p>
                           <p className="text-muted">{commentObj?.comment}</p>
                         </div>
@@ -161,16 +178,8 @@ function ArticleByID() {
                   </div>
 
                   <div className="mb-3">
-                    <label htmlFor="category" className="form-label">Select a category</label>
-                    <select {...register('category')} id="category" className="form-select" defaultValue={state.category}>
-                      <option value="" disabled>-- Select --</option>
-                      <option value="monument">🏛️ Monument</option>
-                      <option value="beach">🏖️ Beach</option>
-                      <option value="mountain">🏔️ Mountains</option>
-                      <option value="city">🌆 City</option>
-                      <option value="nature">🌿 Nature</option>
-                      <option value="other">Other</option>
-                    </select>
+                    <label htmlFor="imageUrl" className="form-label">Image URL</label>
+                    <input type="text" className="form-control" id="imageUrl" defaultValue={state.imageUrl} {...register('imageUrl')} />
                   </div>
 
                   <div className="mb-3">

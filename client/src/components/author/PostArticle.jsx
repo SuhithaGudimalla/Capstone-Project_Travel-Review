@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
 import { userAuthorContextObj } from '../../contexts/UserAuthorContext'
@@ -8,6 +8,26 @@ function PostArticle() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const { currentUser } = useContext(userAuthorContextObj)
   const navigate = useNavigate()
+  const [imageUrl, setImageUrl] = useState('')
+
+  // Function to handle image upload
+  async function handleImageUpload(event) {
+    const file = event.target.files[0]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append("image", file)
+
+    try {
+      const response = await axios.post("http://localhost:4000/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      })
+
+      setImageUrl(response.data.imageUrl) // Save image URL
+    } catch (error) {
+      console.error("Image upload failed", error)
+    }
+  }
 
   async function postArticle(articleObj) {
     const authorData = {
@@ -16,7 +36,6 @@ function PostArticle() {
       profileImageUrl: currentUser.profileImageUrl
     }
     articleObj.authorData = authorData
-
     articleObj.articleId = Date.now()
 
     let currentDate = new Date()
@@ -25,6 +44,9 @@ function PostArticle() {
 
     articleObj.comments = []
     articleObj.isArticleActive = true
+
+    // Add Image URL to the article object
+    articleObj.imageUrl = imageUrl
 
     let res = await axios.post('http://localhost:4000/author-api/article', articleObj)
     if (res.status === 201) {
@@ -85,6 +107,22 @@ function PostArticle() {
               style={{ borderRadius: '10px', padding: '10px' }}>
             </textarea>
           </div>
+
+          {/* Image Upload */}
+          <div className="mb-3">
+            <label htmlFor="imageUpload" className="form-label fw-bold">Upload an Image</label>
+            <input type="file" id="imageUpload" accept="image/*" onChange={handleImageUpload} 
+              className="form-control shadow-sm border-0"
+              style={{ borderRadius: '10px', padding: '10px' }} />
+          </div>
+
+          {/* Preview Image */}
+          {imageUrl && (
+            <div className="mb-3 text-center">
+              <img src={imageUrl} alt="Preview" 
+                style={{ maxWidth: '100%', height: 'auto', borderRadius: '10px', marginTop: '10px' }} />
+            </div>
+          )}
 
           {/* Submit Button */}
           <div className="text-center mt-4">

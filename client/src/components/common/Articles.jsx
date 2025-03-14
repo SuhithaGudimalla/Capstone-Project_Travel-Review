@@ -10,17 +10,22 @@ function Articles() {
   const { getToken } = useAuth()
 
   async function getArticles() {
-    const token = await getToken()
-    let res = await axios.get('http://localhost:4000/author-api/articles', {
-      headers: {
-        Authorization: `Bearer ${token}`
+    try {
+      const token = await getToken()
+      let res = await axios.get('http://localhost:4000/author-api/articles', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (res.data.message === 'articles') {
+        setArticles(res.data.payload)
+        setError('')
+      } else {
+        setError(res.data.message)
       }
-    })
-    if (res.data.message === 'articles') {
-      setArticles(res.data.payload)
-      setError('')
-    } else {
-      setError(res.data.message)
+    } catch (err) {
+      console.error("Error fetching articles:", err)
+      setError("Failed to load articles. Please try again.")
     }
   }
 
@@ -42,7 +47,7 @@ function Articles() {
         📖 Latest Travel Reviews
       </h2>
 
-      {error.length !== 0 && 
+      {error && 
         <p className='display-6 text-center mt-4 text-danger'>{error}</p>
       }
 
@@ -59,13 +64,25 @@ function Articles() {
                   backdropFilter: 'blur(10px)'
                 }}>
                 
+                {/* ✅ Fix: Correct Image URL */}
+                {articleObj.imageUrl && (
+                  <img src={`http://localhost:4000${articleObj.imageUrl}`} 
+                    alt="Article Cover" 
+                    className="card-img-top"
+                    style={{ 
+                      height: '200px', 
+                      objectFit: 'cover' 
+                    }} 
+                  />
+                )}
+
                 <div className="card-body d-flex flex-column">
                   {/* Author Section */}
                   <div className="d-flex align-items-center mb-2">
                     <img src={articleObj.authorData.profileImageUrl}
                       width='45px'
                       className='rounded-circle border shadow-sm me-2'
-                      alt="" />
+                      alt="Author" />
                     <p className='m-0'>
                       <small className='text-muted fw-bold'>{articleObj.authorData.nameOfAuthor}</small>
                     </p>
