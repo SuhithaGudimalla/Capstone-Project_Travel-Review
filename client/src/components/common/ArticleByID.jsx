@@ -102,25 +102,33 @@ function ArticleByID() {
               <div className="card shadow-lg">
                 <div className="card-body bg-light p-5">
                   
-                  {/* ✅ Fixed Image URL */}
+                  {/* ✅ Author Details & Timestamps ABOVE the Image */}
+                  <div className="d-flex justify-content-between align-items-center border-bottom pb-3">
+                    <div className="d-flex align-items-center">
+                      <img 
+                        src={state.authorData.profileImageUrl} 
+                        width="60px" 
+                        className="rounded-circle me-3" 
+                        alt="Author" 
+                      />
+                      <div>
+                        <h5 className="fw-bold mb-0">{state.authorData.nameOfAuthor}</h5>
+                        <small className="text-secondary">Created: {state.dateOfCreation} | Modified: {state.dateOfModification}</small>
+                      </div>
+                    </div>
+                    <h2 className="text-primary">{state.title}</h2>
+                  </div>
+
+                  {/* ✅ Article Image BELOW the Author Info */}
                   {state.imageUrl && (
                     <img 
                       src={`http://localhost:4000${state.imageUrl}`} 
                       alt="Article Cover" 
-                      className="img-fluid mb-4"
+                      className="img-fluid mt-3 mb-4"
                       style={{ width: '100%', borderRadius: '10px', objectFit: 'cover', maxHeight: '400px' }} 
                     />
                   )}
 
-                  <div className="d-flex justify-content-between align-items-center border-bottom pb-3">
-                    <h2 className="text-primary">{state.title}</h2>
-                    <div className="text-center">
-                      <img src={state.authorData.profileImageUrl} width="60px" className="rounded-circle mb-2" alt="" />
-                      <p className="fw-bold">{state.authorData.nameOfAuthor}</p>
-                    </div>
-                  </div>
-
-                  <small className="text-secondary">Created: {state.dateOfCreation} | Modified: {state.dateOfModification}</small>
                   <p className="mt-4 fs-5" style={{ whiteSpace: 'pre-line' }}>{state.content}</p>
 
                   {currentUser.role === 'author' && (
