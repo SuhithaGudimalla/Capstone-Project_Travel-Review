@@ -29,6 +29,11 @@ const Header = () => {
         </Link>
       </div>
 
+      {/* Centered Title */}
+      <div style={titleContainerStyle}>
+        <h1 style={titleStyle}>TRAVEL REVIEW</h1>
+      </div>
+
       <ul style={navListStyle}>
         {!isSignedIn ? (
           <>
@@ -61,10 +66,11 @@ const navStyle = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "15px 50px",
+  padding: "20px 50px",
   background: "linear-gradient(to right, #e3fdfd, #ffe6fa)",
   boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
   backdropFilter: "blur(10px)",
+  position: "relative",
 };
 
 const logoContainerStyle = {
@@ -73,8 +79,22 @@ const logoContainerStyle = {
 };
 
 const logoStyle = {
-  width: "60px",
+  width: "70px",
   borderRadius: "10px",
+};
+
+// Center Title Container
+const titleContainerStyle = {
+  position: "absolute",
+  left: "50%",
+  transform: "translateX(-50%)",
+};
+
+const titleStyle = {
+  fontSize: "28px",
+  fontWeight: "bold",
+  color: "#333",
+  textTransform: "uppercase",
 };
 
 const navListStyle = {
@@ -117,7 +137,7 @@ const userImageStyle = {
 const userRoleStyle = {
   fontSize: "14px",
   fontWeight: "bold",
-  color: "#000", // Black text with no box
+  color: "#000",
   marginLeft: "5px",
 };
 
